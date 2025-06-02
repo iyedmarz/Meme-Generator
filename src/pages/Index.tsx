@@ -1,13 +1,13 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Upload, Type, Download, Images, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/hooks/use-toast';
-import MemeCanvas from '@/components/MemeCanvas';
-import MemeGallery from '@/components/MemeGallery';
+import React, { useState, useRef, useCallback } from "react";
+import { Upload, Type, Download, Images, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import MemeCanvas from "@/components/MemeCanvas";
+import MemeGallery from "@/components/MemeGallery";
 
 interface TextElement {
   id: string;
@@ -22,40 +22,43 @@ interface TextElement {
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [textElements, setTextElements] = useState<TextElement[]>([]);
-  const [currentText, setCurrentText] = useState('');
+  const [currentText, setCurrentText] = useState("");
   const [showGallery, setShowGallery] = useState(false);
   const [savedMemes, setSavedMemes] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Fichier trop volumineux",
-          description: "Veuillez sélectionner une image de moins de 5MB.",
-          variant: "destructive"
-        });
-        return;
-      }
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          // toast({
+          //   title: "Fichier trop volumineux",
+          //   description: "Veuillez sélectionner une image de moins de 5MB.",
+          //   variant: "destructive",
+          // });
+          return;
+        }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
-        setTextElements([]);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setSelectedImage(e.target?.result as string);
+          setTextElements([]);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    []
+  );
 
   const addTextElement = useCallback(() => {
     if (!currentText.trim()) {
-      toast({
-        title: "Texte vide",
-        description: "Veuillez entrer du texte avant d'ajouter.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Texte vide",
+      //   description: "Veuillez entrer du texte avant d'ajouter.",
+      //   variant: "destructive",
+      // });
       return;
     }
 
@@ -63,46 +66,51 @@ const Index = () => {
       id: Date.now().toString(),
       text: currentText,
       x: 50,
-      y: 50 + (textElements.length * 60),
+      y: 50 + textElements.length * 60,
       fontSize: 32,
-      color: '#ffffff',
-      fontWeight: 'bold'
+      color: "#ffffff",
+      fontWeight: "bold",
     };
 
     setTextElements([...textElements, newTextElement]);
-    setCurrentText('');
-    
-    toast({
-      title: "Texte ajouté",
-      description: "Vous pouvez maintenant le positionner sur l'image.",
-    });
+    setCurrentText("");
+
+    // toast({
+    //   title: "Texte ajouté",
+    //   description: "Vous pouvez maintenant le positionner sur l'image.",
+    // });
   }, [currentText, textElements]);
 
-  const updateTextElement = useCallback((id: string, updates: Partial<TextElement>) => {
-    setTextElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
-  }, []);
+  const updateTextElement = useCallback(
+    (id: string, updates: Partial<TextElement>) => {
+      setTextElements((prev) =>
+        prev.map((el) => (el.id === id ? { ...el, ...updates } : el))
+      );
+    },
+    []
+  );
 
   const deleteTextElement = useCallback((id: string) => {
-    setTextElements(prev => prev.filter(el => el.id !== id));
+    setTextElements((prev) => prev.filter((el) => el.id !== id));
   }, []);
 
   const downloadMeme = useCallback(() => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.download = `meme-${Date.now()}.png`;
     link.href = canvas.toDataURL();
     link.click();
 
     // Sauvegarder le mème dans la galerie
     const memeData = canvas.toDataURL();
-    setSavedMemes(prev => [memeData, ...prev]);
+    setSavedMemes((prev) => [memeData, ...prev]);
 
-    toast({
-      title: "Mème téléchargé",
-      description: "Votre mème a été téléchargé et ajouté à la galerie !",
-    });
+    // toast({
+    //   title: "Mème téléchargé",
+    //   description: "Votre mème a été téléchargé et ajouté à la galerie !",
+    // });
   }, []);
 
   const shareMeme = useCallback(() => {
@@ -110,17 +118,18 @@ const Index = () => {
 
     canvasRef.current.toBlob((blob) => {
       if (blob && navigator.share) {
-        const file = new File([blob], 'meme.png', { type: 'image/png' });
+        const file = new File([blob], "meme.png", { type: "image/png" });
         navigator.share({
-          title: 'Mon mème génial !',
-          files: [file]
+          title: "Mon mème génial !",
+          files: [file],
         });
       } else {
         // Fallback: copier l'URL
-        toast({
-          title: "Partage",
-          description: "Utilisez le bouton télécharger pour sauvegarder et partager votre mème.",
-        });
+        // toast({
+        //   title: "Partage",
+        //   description:
+        //     "Utilisez le bouton télécharger pour sauvegarder et partager votre mème.",
+        // });
       }
     });
   }, []);
@@ -130,11 +139,8 @@ const Index = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">
-            🎭 Générateur de Mèmes
+            Générateur de Mèmes
           </h1>
-          <p className="text-xl text-white/90 drop-shadow">
-            Créez des mèmes hilarants en quelques clics !
-          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -203,13 +209,20 @@ const Index = () => {
             {textElements.length > 0 && (
               <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-green-700">Textes ajoutés</CardTitle>
+                  <CardTitle className="text-green-700">
+                    Textes ajoutés
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {textElements.map((element) => (
-                      <div key={element.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm truncate flex-1">{element.text}</span>
+                      <div
+                        key={element.id}
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                      >
+                        <span className="text-sm truncate flex-1">
+                          {element.text}
+                        </span>
                         <Button
                           onClick={() => deleteTextElement(element.id)}
                           variant="destructive"
@@ -264,7 +277,9 @@ const Index = () => {
                   <div className="h-96 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
                     <div className="text-center text-gray-500">
                       <Upload className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                      <p className="text-xl">Téléchargez une image pour commencer</p>
+                      <p className="text-xl">
+                        Téléchargez une image pour commencer
+                      </p>
                     </div>
                   </div>
                 )}
@@ -280,7 +295,7 @@ const Index = () => {
             className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-3 text-lg"
           >
             <Images className="h-5 w-5 mr-2" />
-            {showGallery ? 'Masquer' : 'Voir'} la Galerie ({savedMemes.length})
+            {showGallery ? "Masquer" : "Voir"} la Galerie ({savedMemes.length})
           </Button>
         </div>
 

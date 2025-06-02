@@ -1,9 +1,8 @@
-
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download, Share2, Trash2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download, Share2, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface MemeGalleryProps {
   memes: string[];
@@ -11,40 +10,40 @@ interface MemeGalleryProps {
 
 const MemeGallery: React.FC<MemeGalleryProps> = ({ memes }) => {
   const downloadMeme = (memeData: string, index: number) => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.download = `meme-gallery-${index + 1}.png`;
     link.href = memeData;
     link.click();
 
-    toast({
-      title: "Mème téléchargé",
-      description: "Le mème a été téléchargé avec succès !",
-    });
+    // toast({
+    //   title: "Mème téléchargé",
+    //   description: "Le mème a été téléchargé avec succès !",
+    // });
   };
 
   const shareMeme = async (memeData: string) => {
     try {
       const response = await fetch(memeData);
       const blob = await response.blob();
-      
+
       if (navigator.share) {
-        const file = new File([blob], 'meme.png', { type: 'image/png' });
+        const file = new File([blob], "meme.png", { type: "image/png" });
         await navigator.share({
-          title: 'Mon mème génial !',
-          files: [file]
+          title: "Mon mème génial !",
+          files: [file],
         });
       } else {
-        toast({
-          title: "Partage",
-          description: "Utilisez le bouton télécharger pour sauvegarder et partager ce mème.",
-        });
+        // toast({
+        //   title: "Partage",
+        //   description: "Utilisez le bouton télécharger pour sauvegarder et partager ce mème.",
+        // });
       }
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de partager le mème.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Erreur",
+      //   description: "Impossible de partager le mème.",
+      //   variant: "destructive"
+      // });
     }
   };
 
@@ -55,7 +54,10 @@ const MemeGallery: React.FC<MemeGalleryProps> = ({ memes }) => {
           <div className="text-gray-500">
             <div className="text-6xl mb-4">🎭</div>
             <h3 className="text-xl font-semibold mb-2">Aucun mème créé</h3>
-            <p>Vos créations apparaîtront ici une fois que vous aurez téléchargé vos premiers mèmes !</p>
+            <p>
+              Vos créations apparaîtront ici une fois que vous aurez téléchargé
+              vos premiers mèmes !
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -66,7 +68,7 @@ const MemeGallery: React.FC<MemeGalleryProps> = ({ memes }) => {
     <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
       <CardHeader>
         <CardTitle className="text-center text-2xl text-purple-700">
-          🎨 Ma Galerie de Mèmes ({memes.length})
+          Ma Galerie de Mèmes ({memes.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
