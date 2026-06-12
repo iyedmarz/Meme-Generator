@@ -10,7 +10,7 @@ npm i
 # Step 4: Start the development server
 npm run dev
 
-This project is built with:
+# This project is built with:
 
 - Vite
 - TypeScript
